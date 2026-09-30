@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "flop-proof-verifier"
+version = "1.0.0"
+authors = [
+  { name="FLOP Technocore CI Guardians", email="ci@technocore.chat" },
+]
+description = "Automated CI/CD quality gate and pre-commit validator for Technocore contribution proofs."
+readme = "README.md"
+requires-python = ">=3.9"
+license = "MIT"
+dependencies = [
+    "cryptography>=38.0.0"
+]
+
+[project.urls]
+"Homepage" = "https://github.com/zwf5458/FLOP-Proof-Verifier-Action"
+"Bug Tracker" = "https://github.com/zwf5458/FLOP-Proof-Verifier-Action/issues"
+
+[project.scripts]
+flop-verify-proof = "scripts.verify_proof_ci:main"
+flop-pre-commit = "scripts.pre_commit_hook:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["scripts*"]
