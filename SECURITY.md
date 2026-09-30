@@ -1,52 +1,45 @@
-# Security Policy
+# Security & CI/CD Pipeline Policy
 
-## 🔒 Security & Key Hygiene Policy
+## 🔒 Security Standards for Technocore Proof Verifier Action
 
-The **FLOP-Technocore-Kit** project is designed for developers exploring the FLOP Network and Technocore decentralized protocols. Because this project interacts with asymmetric cryptography (Ed25519) and Decentralized Identifiers (DIDs), strict cryptographic hygiene is paramount.
-
----
-
-### 1. Zero-PrivateKey Leakage Guarantee
-
-* **No Secrets Committed**: This repository enforces strict `.gitignore` filters prohibiting any `*.pem`, `*.key`, `*.passphrase`, `.agent_config.json`, or `.env*` credential files.
-* **Separation of Keys**: Developers must **never** commit private identity files (`identity.pem`) or passphrases to version control.
-* **Cold / Hot DID Isolation**: We strongly recommend using separate secondary DIDs for automated 24/7 cloud VPS bots, keeping the primary contributor DID secured in cold storage on local development workstations.
+The **FLOP-Proof-Verifier-Action** repository provides automated CI/CD and pre-commit validation for decentralized contribution proofs across the Arthur Hayes FLOP Network and Technocore ecosystem. Because CI runners execute arbitrary pull request triggers, strict pipeline hygiene is enforced.
 
 ---
 
-### 2. Supported Versions
+### 1. Minimal GitHub Actions Permissions
+
+Workflow definitions provided in `templates/verify_proof.yml` enforce least-privilege permission scoping:
+```yaml
+permissions:
+  contents: read
+```
+Workflows strictly forbid write access (`contents: write`) or administrative permissions, preventing privilege escalation from untrusted third-party pull requests.
+
+---
+
+### 2. Supply-Chain & Integrity Protections
+
+* **Immutable Commit SHA Verification**: Proof verifiers check against strictly 40-character hexadecimal git commit hashes. Truncated or malformed hashes are immediately rejected.
+* **Deterministic Ed25519 Cryptography**: Signatures are checked using standard multi-format decoding against the contributor's public `did:key` without downloading dynamic remote code at runtime whenever local tools are present.
+* **Zero Secret Requirements**: Proof verification does not require GitHub access tokens or private keys to run.
+
+---
+
+### 3. Supported Versions
 
 | Version | Supported          | Security Status |
 | :---    | :---               | :---            |
-| 1.0.x   | :white_check_mark: | Active Security Maintenance |
-| < 1.0   | :x:                | Deprecated / Not Supported |
+| 1.1.x   | :white_check_mark: | Active Maintenance |
+| 1.0.x   | :white_check_mark: | Maintenance Only |
+| < 1.0   | :x:                | Deprecated |
 
 ---
 
-### 3. Threat Model & Best Practices
+### 4. Vulnerability Disclosure & Incident Response
 
-1. **Passphrase Handling**:
-   - Always load private key decryption passphrases via operating system environment variables (`TECHNOCORE_PASSPHRASE`) or interactive terminal prompts (`getpass.getpass()`).
-   - Never hardcode passphrases in application scripts.
-2. **Replay Attack Mitigation**:
-   - Technocore signatures require strictly monotonic nonces. Always implement monotonic clocks or database-backed sequences to prevent signature replay or transaction reordering.
-3. **Canonical Payloads**:
-   - Technocore signing schemes require stripping of Unicode non-printable characters and canonical room formatting. Failure to normalize messages before signing can lead to message rejection.
+If you find a security hole in the proof parser, pre-commit hook, or CI runner script:
 
----
-
-### 4. Reporting a Security Vulnerability
-
-If you discover a security vulnerability, an insecure default, or any potential flaw within this developer kit, please **do not open a public GitHub issue**.
-
-Instead, report the issue responsibly:
-* **Primary Contact**: Open an encrypted communication or report directly via Technocore DID:  
-  `did:key:z6MkwBZMeaqfJpg3GPEd4jR719FxNZJmi2YURvxC9bgHozuT`
-* **Email**: Contact the repository maintainer at the email address designated in git commit author metadata.
-
-Please provide:
-1. A description of the vulnerability and attack vector.
-2. Reproducible proof-of-concept steps.
-3. Potential mitigation or patch recommendations if available.
-
-We will acknowledge receipt within 48 hours and work with you on a coordinated public disclosure.
+* **Primary Maintainer DID (Tab 4 rabisu)**:  
+  `did:key:z6Mkr2HtFjzrenM57Nh8hKdMuLdC5HaD44BUoL7zmRCvr16r`
+* **Maintainer Namespace**: `zwf5458/FLOP-Proof-Verifier-Action`
+* **Disclosure Method**: Do not publish security issues publicly. Contact node operators directly via Technocore node room or designated maintainer email. Reports will receive acknowledgement within 24 hours.
